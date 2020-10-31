@@ -1,89 +1,176 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
+  <v-row justify="start" align="center">
+    <div style="display: block; width: 100%">
+      <v-row>
+        <v-col>
+          <p class="filter--text">КОМНАТЫ</p>
+          <v-btn-toggle v-model="filter.rooms" color="primary">
+            <v-btn height="40px" rounded class="ms-1 me-1" v-for="(room, idx) of rooms" :key="idx">
+              {{ room }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col>
+          <p class="filter--text">ЭТАЖ</p>
+          <div style="width: 175px">
+            <v-row>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="floor[0]">
+                </v-text-field>
+              </v-col>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="floor[1]">
+                </v-text-field>
+              </v-col>
+            </v-row>
           </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
+          <vue-slider style="width: 175px" color="primary" :max="100" v-model="floor"></vue-slider>
+        </v-col>
+        <v-col>
+          <p class="filter--text">ПЛОЩАДЬ, м<sup>2</sup></p>
+          <div style="width: 175px">
+            <v-row>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="square[0]">
+                </v-text-field>
+              </v-col>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="square[1]">
+                </v-text-field>
+              </v-col>
+            </v-row>
+          </div>
+          <vue-slider style="width: 175px" color="primary" :max="100" :min="0" v-model="square"></vue-slider>
+        </v-col>
+        <v-col>
+          <p class="filter--text">СТОИМОСТЬ, млн. р.</p>
+          <div style="width: 175px">
+            <v-row>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="sum[0]">
+                </v-text-field>
+              </v-col>
+              <v-col
+                class="pt-0"
+                cols="12"
+                md="6"
+              >
+                <v-text-field hide-details outlined dense v-model="sum[1]">
+                </v-text-field>
+              </v-col>
+            </v-row>
+          </div>
+          <vue-slider style="width: 175px" color="primary" :max="100" v-model="sum"></vue-slider>
+        </v-col>
+        <v-col align-self="center">
+          <v-btn @click="onFilter()" elevation="0" width="201px" color="primary" class="text-center mb-2">Применить</v-btn>
+          <v-btn @click="onFilter('clear')" width="201px" text class="text-center" elevation="0">сбросить фильтр</v-btn>
+        </v-col>
+      </v-row>
+    </div>
+    <card class="mt-8" v-for="(item, idx) in items" :key="idx" :floor="item['floor']" :meter="item.square" :no="item.building_id" :room="item.rooms" :sum="item.price_real" :sub-sum="item.price_real"></card>
   </v-row>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
+import 'vue-slider-component/theme/antd.css'
+import json from '~/assets/test-data.json'
+import Card from '~/components/Card'
 
 export default {
   components: {
-    Logo,
-    VuetifyLogo
+    Card,
+  },
+  data() {
+    return {
+      filter: {
+        rooms: 1,
+        floor: null,
+        sum: null,
+        square: null
+      },
+      rooms: [
+        'S', '1к', '2к', '3к'
+      ],
+      floor: [
+        '1', '99'
+      ],
+      sum: [
+        '9.9', '99.9'
+      ],
+      square: [
+        '0', '99.9'
+      ],
+      items: json
+    }
+  },
+  computed: {
+    floorResult(){
+      return this.floor[1] - this.floor[0]
+    }
+  },
+  methods: {
+    async onFilter(clear) {
+      if (clear) {
+        return this.items = json
+      }
+
+      const million = 1000000
+      let result = []
+
+      // По комнатам
+      result = await json.filter(item => item.rooms === this.filter.rooms )
+
+      // По этожу
+      result = await result.filter(item => item.floor > parseInt(this.floor[0]))
+      result = await result.filter(item => item.floor < parseInt(this.floor[1]))
+
+      // По площади
+      result = await result.filter(item => item.square > parseInt(this.square[0]))
+      result = await result.filter(item => item.square < parseInt(this.square[1]))
+
+      console.log(parseInt(this.square[0]), parseInt(this.square[1]))
+
+      // По стоимости
+      result = await result.filter(item => item.price_real > parseInt(this.sum[0]) * million)
+      result = await result.filter(item => item.price_real < parseInt(this.sum[1]) * million)
+
+      console.log(parseInt(this.sum[0]) * million,parseInt(this.sum[1]) * million,)
+
+      this.items = result
+    }
   }
 }
 </script>
+
+<style lang="scss">
+$themeColor: #70D24E;
+
+/* import theme style */
+@import '~vue-slider-component/lib/theme/default.scss';
+  .filter--text {
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 700;
+  }
+</style>
