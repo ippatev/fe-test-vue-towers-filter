@@ -116,7 +116,7 @@ export default {
         '1', '99'
       ],
       sum: [
-        '9.9', '99.9'
+        '0', '99.9'
       ],
       square: [
         '0', '99.9'
@@ -132,6 +132,16 @@ export default {
   methods: {
     async onFilter(clear) {
       if (clear) {
+        this.filter.rooms = 1
+        this.floor = [
+          '1', '99'
+        ]
+        this.sum = [
+          '0', '99.9'
+        ]
+        this.square = [
+          '0', '99.9'
+        ]
         return this.items = json
       }
 

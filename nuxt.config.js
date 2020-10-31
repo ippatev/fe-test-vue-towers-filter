@@ -4,7 +4,6 @@ export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
   ssr: false,
 
-
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
 
@@ -25,6 +24,16 @@ export default {
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
   ],
+
+  router: {
+  },
+
+  generate: {
+    extendRoutes(generatedRoutes) {
+      const index = generatedRoutes.findIndex(({ route }) => route === '');
+      generatedRoutes.splice(index, 1);
+    },
+  },
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
@@ -52,7 +61,6 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
   ],
-
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},
 
